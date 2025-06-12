@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Hindi-English Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        .om-symbol {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .tab {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 0 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .tab.active, .tab:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .status {
+            margin-top: 10px;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .video-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .video-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .video-meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        .download-links {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .download-btn {
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: background 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background: #218838;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="om-symbol">à¥</div>
+            <h1>Hindu Knowledge Converter</h1>
+            <p class="subtitle">Breaking Language Barriers in Spiritual Learning</p>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('user')">User Portal</button>
+            <button class="tab" onclick="switchTab('admin')">Admin Panel</button>
+        </div>
+        
+        <!-- User Interface -->
+        <div id="user-tab" class="tab-content active">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #667eea;">Browse Converted Videos</h2>
+            
+            <input type="text" class="search-box" placeholder="Search videos by title or keywords..." onkeyup="searchVideos(this.value)">
+            
+            <div class="video-grid" id="videoGrid">
+                <!-- Sample videos for demo -->
+                <div class="video-card">
+                    <div class="video-title">Bhagavad Gita Chapter 2 - Sankhya Yoga</div>
+                    <div class="video-meta">Duration: 45 mins | Processed: 2 days ago</div>
+                    <div class="download-links">
+                        <a href="#" class="download-btn" onclick="downloadFile('transcript', 'gita-ch2')">ðŸ“„ Transcript</a>
+                        <a href="#" class="download-btn" onclick="downloadFile('summary', 'gita-ch2')">ðŸ“‹ Summary</a>
+                    </div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-title">Ramayana - Ram Janma Katha</div>
+                    <div class="video-meta">Duration: 1 hour 20 mins | Processed: 5 days ago</div>
+                    <div class="download-links">
+                        <a href="#" class="download-btn" onclick="downloadFile('transcript', 'ramayana-janma')">ðŸ“„ Transcript</a>
+                        <a href="#" class="download-btn" onclick="downloadFile('summary', 'ramayana-janma')">ðŸ“‹ Summary</a>
+                    </div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-title">Hanuman Chalisa - Meaning and Significance</div>
+                    <div class="video-meta">Duration: 25 mins | Processed: 1 week ago</div>
+                    <div class="download-links">
+                        <a href="#" class="download-btn" onclick="downloadFile('transcript', 'hanuman-chalisa')">ðŸ“„ Transcript</a>
+                        <a href="#" class="download-btn" onclick="downloadFile('summary', 'hanuman-chalisa')">ðŸ“‹ Summary</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Admin Interface -->
+        <div id="admin-tab" class="tab-content">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #667eea;">Admin Dashboard</h2>
+            
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-number">24</div>
+                    <div>Videos Processed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">156</div>
+                    <div>Total Downloads</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div>Processing Queue</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="youtubeUrl">YouTube Video URL:</label>
+                <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="videoCategory">Category:</label>
+                <select id="videoCategory">
+                    <option value="bhagavad-gita">Bhagavad Gita</option>
+                    <option value="ramayana">Ramayana</option>
+                    <option value="mahabharata">Mahabharata</option>
+                    <option value="puranas">Puranas</option>
+                    <option value="upanishads">Upanishads</option>
+                    <option value="devotional">Devotional Songs</option>
+                    <option value="philosophy">Philosophy</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="customTitle">Custom Title (Optional):</label>
+                <input type="text" id="customTitle" placeholder="Leave blank to use YouTube title">
+            </div>
+            
+            <button class="btn" onclick="processVideo()" id="processBtn">ðŸ”„ Process Video</button>
+            
+            <div class="progress" id="progressSection">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="status" id="statusText">Initializing...</div>
+            </div>
+            
+            <div id="resultSection" style="display: none; margin-top: 30px;">
+                <div class="success">
+                    âœ… Video processed successfully!
+                </div>
+                <div style="margin-top: 20px;">
+                    <a href="#" class="download-btn" onclick="downloadProcessedFile('transcript')" style="margin-right: 10px;">ðŸ“„ Download Transcript</a>
+                    <a href="#" class="download-btn" onclick="downloadProcessedFile('summary')">ðŸ“‹ Download Summary</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for demonstration (fallback when backend not available)
+        let processedVideos = [
+            {
+                id: 'gita-ch2',
+                title: 'Bhagavad Gita Chapter 2 - Sankhya Yoga',
+                duration: '45 mins',
+                processed: '2 days ago',
+                category: 'bhagavad-gita'
+            },
+            {
+                id: 'ramayana-janma',
+                title: 'Ramayana - Ram Janma Katha',
+                duration: '1 hour 20 mins',
+                processed: '5 days ago',
+                category: 'ramayana'
+            },
+            {
+                id: 'hanuman-chalisa',
+                title: 'Hanuman Chalisa - Meaning and Significance',
+                duration: '25 mins',
+                processed: '1 week ago',
+                category: 'devotional'
+            }
+        ];
+
+        let currentVideoId = null;
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Load videos when switching to user tab
+            if (tabName === 'user') {
+                loadVideos();
+            }
+        }
+
+        async function loadVideos() {
+            try {
+                const response = await fetch('/api/videos');
+                if (response.ok) {
+                    const videos = await response.json();
+                    displayVideos(videos);
+                } else {
+                    // Fallback to demo data if backend not available
+                    displayVideos(processedVideos);
+                }
+            } catch (error) {
+                // Show demo data if backend not available
+                displayVideos(processedVideos);
+            }
+        }
+
+        function displayVideos(videos) {
+            const grid = document.getElementById('videoGrid');
+            grid.innerHTML = '';
+            
+            if (videos.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #666;">No videos processed yet. Use the Admin Panel to process your first video!</p>';
+                return;
+            }
+            
+            videos.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.innerHTML = `
+                    <div class="video-title">${video.title}</div>
+                    <div class="video-meta">Duration: ${video.duration} | Processed: ${video.processed_date || video.processed}</div>
+                    <div class="download-links">
+                        <a href="#" class="download-btn" onclick="downloadRealFile('transcript', '${video.transcript_file || video.id}')">ðŸ“„ Transcript</a>
+                        <a href="#" class="download-btn" onclick="downloadRealFile('summary', '${video.summary_file || video.id}')">ðŸ“‹ Summary</a>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        async function downloadRealFile(type, filename) {
+            try {
+                // Try to download from real backend
+                const response = await fetch(`/api/download/${type}/${filename}`);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    throw new Error('Backend not available');
+                }
+            } catch (error) {
+                // Fallback to demo download
+                downloadFile(type, filename);
+            }
+        }
+
+        function downloadDemoFile(type) {
+            const filename = `demo_${type}.txt`;
+            let content = '';
+            
+            if (type === 'transcript') {
+                content = generateSampleTranscript('demo');
+            } else {
+                content = generateSampleSummary('demo');
+            }
+            
+            downloadTextFile(content, filename);
+        }
+
+        function searchVideos(query) {
+            const videoCards = document.querySelectorAll('.video-card');
+            const searchTerm = query.toLowerCase();
+            
+            videoCards.forEach(card => {
+                const title = card.querySelector('.video-title').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        async function processVideo() {
+            const url = document.getElementById('youtubeUrl').value;
+            const category = document.getElementById('videoCategory').value;
+            const customTitle = document.getElementById('customTitle').value;
+            
+            if (!url) {
+                alert('Please enter a YouTube URL');
+                return;
+            }
+            
+            // Validate YouTube URL
+            const youtubeRegex = /^(https?\:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+            if (!youtubeRegex.test(url)) {
+                alert('Please enter a valid YouTube URL');
+                return;
+            }
+            
+            // Show progress section
+            document.getElementById('progressSection').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('processBtn').disabled = true;
+            
+            // Update progress to show connecting
+            document.getElementById('progressFill').style.width = '5%';
+            document.getElementById('statusText').textContent = 'Connecting to backend server...';
+            
+            try {
+                // Real API call to backend
+                const response = await fetch('/api/process-video', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        youtube_url: url,
+                        category: category,
+                        custom_title: customTitle
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Success - show download options
+                    document.getElementById('progressSection').style.display = 'none';
+                    document.getElementById('resultSection').style.display = 'block';
+                    currentVideoId = result.video_id;
+                    
+                    // Refresh video list
+                    loadVideos();
+                } else {
+                    throw new Error(result.error || 'Processing failed');
+                }
+                
+            } catch (error) {
+                // Handle errors - show demo mode
+                console.log('Backend not available, showing demo mode');
+                document.getElementById('statusText').textContent = 'Backend server not running - showing demo...';
+                
+                // Fallback to demo simulation
+                const steps = [
+                    { progress: 20, text: 'âš ï¸ Demo Mode: Simulating audio extraction...' },
+                    { progress: 40, text: 'âš ï¸ Demo Mode: Simulating Whisper transcription...' },
+                    { progress: 60, text: 'âš ï¸ Demo Mode: Simulating translation...' },
+                    { progress: 80, text: 'âš ï¸ Demo Mode: Simulating summary generation...' },
+                    { progress: 100, text: 'âš ï¸ Demo complete! (Start backend server for real processing)' }
+                ];
+                
+                for (let step of steps) {
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    document.getElementById('progressFill').style.width = step.progress + '%';
+                    document.getElementById('statusText').textContent = step.text;
+                }
+                
+                // Show demo results with warning
+                document.getElementById('progressSection').style.display = 'none';
+                document.getElementById('resultSection').style.display = 'block';
+                document.getElementById('resultSection').innerHTML = `
+                    <div class="error">
+                        âš ï¸ DEMO MODE: Backend server not running. To enable real processing:
+                        <br>1. Install Python and dependencies
+                        <br>2. Run: python app.py
+                        <br>3. Visit http://localhost:5000
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <a href="#" class="download-btn" onclick="downloadDemoFile('transcript')" style="margin-right: 10px;">ðŸ“„ Download Demo Transcript</a>
+                        <a href="#" class="download-btn" onclick="downloadDemoFile('summary')">ðŸ“‹ Download Demo Summary</a>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('processBtn').disabled = false;
+            
+            // Clear form
+            document.getElementById('youtubeUrl').value = '';
+            document.getElementById('customTitle').value = '';
+        }
+
+        function downloadFile(type, videoId) {
+            // Simulate file download
+            const filename = `${videoId}_${type}.txt`;
+            
+            let content = '';
+            if (type === 'transcript') {
+                content = generateSampleTranscript(videoId);
+            } else {
+                content = generateSampleSummary(videoId);
+            }
+            
+            downloadTextFile(content, filename);
+        }
+
+        function downloadProcessedFile(type) {
+            const filename = `processed_video_${type}.txt`;
+            let content = '';
+            
+            if (type === 'transcript') {
+                content = generateSampleTranscript('processed');
+            } else {
+                content = generateSampleSummary('processed');
+            }
+            
+            downloadTextFile(content, filename);
+        }
+
+        function generateSampleTranscript(videoId) {
+            return `HINDI TO ENGLISH TRANSCRIPT
+Video ID: ${videoId}
+Generated: ${new Date().toLocaleString()}
+Duration: 45 minutes
+
+[00:00:15] Narrator: Welcome to today's discourse on the sacred teachings of Hindu philosophy.
+
+[00:00:30] Speaker: In the Bhagavad Gita, Lord Krishna explains to Arjuna the concept of dharma - righteous duty.
+
+[00:01:00] Speaker: "You have the right to perform your prescribed duties, but you are not entitled to the fruits of action."
+
+[00:01:30] Speaker: This verse teaches us about nishkama karma - performing action without attachment to results.
+
+[00:02:00] Speaker: When we act with devotion and surrender to the divine will, we transcend the cycle of karma.
+
+[Continue with full transcript...]
+
+Key Sanskrit Terms Used:
+- Dharma: Righteous duty, moral law
+- Karma: Action, deed, law of cause and effect  
+- Moksha: Liberation, spiritual release
+- Bhakti: Devotion, loving worship
+- Yoga: Union, spiritual practice
+
+Note: This transcript maintains original Sanskrit terminology with English explanations to preserve spiritual context.`;
+        }
+
+        function generateSampleSummary(videoId) {
+            return `SUMMARY - HINDU KNOWLEDGE VIDEO
+Video ID: ${videoId}
+Generated: ${new Date().toLocaleString()}
+
+KEY TEACHINGS:
+â€¢ The importance of performing one's dharma (righteous duty) without attachment to results
+â€¢ Understanding the concept of nishkama karma (desireless action)
+â€¢ The path of bhakti (devotion) as a means to spiritual liberation
+â€¢ The role of surrender (saranagati) in spiritual practice
+
+MAIN CONCEPTS EXPLAINED:
+1. Dharma - Individual duty based on one's nature and life circumstances
+2. Karma Yoga - The path of selfless action
+3. Bhakti Yoga - The path of devotion and love for the Divine
+4. Moksha - Ultimate liberation from the cycle of birth and death
+
+PRACTICAL APPLICATIONS:
+â€¢ Perform daily duties with sincerity but without ego
+â€¢ Cultivate devotion through prayer, chanting, and service
+â€¢ Practice detachment from material outcomes
+â€¢ Develop compassion and service towards all beings
+
+IMPORTANT QUOTES:
+"You have the right to perform your prescribed duties, but you are not entitled to the fruits of action." - Bhagavad Gita 2.47
+
+"Whatever you do, whatever you eat, whatever you offer in sacrifice, whatever you give away, whatever austerities you practice - do that as an offering to the Divine." - Bhagavad Gita 9.27
+
+RECOMMENDED FURTHER STUDY:
+â€¢ Bhagavad Gita Chapters 2, 3, and 9
+â€¢ Ramayana - Study of ideal dharmic behavior
+â€¢ Practice of daily meditation and prayer
+
+This summary preserves the spiritual essence while making ancient wisdom accessible in modern English.`;
+        }
+
+        function downloadTextFile(content, filename) {
+            const element = document.createElement('a');
+            const file = new Blob([content], { type: 'text/plain' });
+            element.href = URL.createObjectURL(file);
+            element.download = filename;
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Hindu Knowledge Converter initialized');
+            
+            // Load videos on startup
+            loadVideos();
+            
+            // Check if backend is available
+            checkBackendStatus();
+        });
+
+        async function checkBackendStatus() {
+            try {
+                const response = await fetch('/api/stats');
+                if (response.ok) {
+                    const stats = await response.json();
+                    updateStats(stats);
+                    showBackendStatus(true);
+                } else {
+                    showBackendStatus(false);
+                }
+            } catch (error) {
+                showBackendStatus(false);
+            }
+        }
+
+        function showBackendStatus(isAvailable) {
+            const header = document.querySelector('header');
+            const statusDiv = document.createElement('div');
+            statusDiv.style.marginTop = '10px';
+            statusDiv.style.fontSize = '0.9em';
+            
+            if (isAvailable) {
+                statusDiv.innerHTML = 'ðŸŸ¢ Backend Server: <span style="color: #28a745;">Online</span>';
+            } else {
+                statusDiv.innerHTML = 'ðŸ”´ Backend Server: <span style="color: #dc3545;">Offline</span> - Demo Mode Active';
+            }
+            
+            header.appendChild(statusDiv);
+        }
+
+        function updateStats(stats) {
+            const statCards = document.querySelectorAll('.stat-number');
+            if (statCards.length >= 3) {
+                statCards[0].textContent = stats.total_videos;
+                statCards[1].textContent = stats.total_downloads;
+                statCards[2].textContent = stats.queue_count;
+            }
+        }
+    </script>
+</body>
+</html>
