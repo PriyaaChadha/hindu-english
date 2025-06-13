@@ -441,4 +441,7 @@ if __name__ == '__main__':
     print("Loading AI models (this may take a moment)...")
     print("Server ready!")
     print("Open http://localhost:5000 in your web browser")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    
+    # Use Railway's PORT environment variable, fallback to 5000 for local development
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
